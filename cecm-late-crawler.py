@@ -8,7 +8,7 @@
 # * You should have a csv containing student ids.
 # * You can use [hadi's repository](https://github.com/hadisfr/cecm-sid-crawler) to crawle student ids.
 
-# In[22]:
+# In[1]:
 
 
 import requests
@@ -17,7 +17,7 @@ from getpass import getpass
 import pandas as pd
 
 
-# In[23]:
+# In[2]:
 
 
 print("Get Late Submissions from CECM")
@@ -27,10 +27,20 @@ id_csv_path = input("CSV Containing IDs Path: ")
 file_name = input("Output CSV File Name: ")
 
 
-# In[33]:
+# In[3]:
+
+
+def print_progressbar(title, i, l):
+    percentage = i / l * 100
+    print( title + "\t" + "%s\t%.2f%% (%d of %d)\t\r" % (int(percentage / 10) * "|" + (10 - int(percentage / 10)) * ".", percentage, i, l), end='\r')
+
+
+# In[4]:
 
 
 def get_late_submissions(session, assignment_id):
+
+    print_progressbar('Fetching Page' ,0, 100)
     request_response = requests.post(
         f"https://cecm.ut.ac.ir/mod/assign/view.php?id={assignment_id}&action=grading", 
         cookies={'MoodleSession': session},
@@ -39,50 +49,56 @@ def get_late_submissions(session, assignment_id):
             'unified-filter-submitted': 1,
         }
     ).text.replace("\n", "")
+    print_progressbar('Fetching Page' ,100, 100)
     late_pattern = (
         r'<tr[^>]*class="user(?P<id>[0-9]+)[^>]*>.*?'
         r'<td class="cell c2"[^>]*>.*?<a[^>]*>(?P<name>[^<]+)</a></td>.*?'
         r'<td class="cell c4"[^>]*>.*?<div[^>]*>(?P<status>[^<]+)</div></td>.*?'
         r'</tr>'
     )
-    return [entry.groupdict() for entry in re.finditer(late_pattern, request_response)]
+    founded = list(re.finditer(late_pattern, request_response))
+    groupdicts = []
+    for idx, entry in enumerate(founded):
+        groupdicts.append(entry.groupdict())
+        print_progressbar('Crawling Submissions' ,idx+1, len(founded))
+    return groupdicts
 
 
-# In[42]:
+# In[5]:
 
 
 lates = get_late_submissions(session, assignment_id)
 
 
-# In[43]:
+# In[6]:
 
 
 lates_csv = pd.read_csv(id_csv_path, index_col='id')
 
 
-# In[44]:
+# In[7]:
 
 
 lates_csv['late'] = 'Not Submitted'
 lates_csv['name'] = 'Not Submitted'
 
 
-# In[45]:
+# In[8]:
 
 
-for late in lates :
+for idx, late in enumerate(lates) :
     lates_csv.at[int(late['id']), 'name'] = late['name']
     lates_csv.at[int(late['id']), 'late'] = late['status']
 
 
-# In[46]:
+# In[9]:
 
 
 def cint(x):
     return int(x) if x else 0
 
 
-# In[47]:
+# In[10]:
 
 
 def AP_grade_system_mapper(s): 
@@ -100,13 +116,13 @@ def AP_grade_system_mapper(s):
         else: return int((total_time_in_mins - 3*60) / (24*60)) + 1.3
 
 
-# In[48]:
+# In[11]:
 
 
 lates_csv['late'] = lates_csv['late'].apply(AP_grade_system_mapper)
 
 
-# In[49]:
+# In[12]:
 
 
 lates_csv.to_csv(f'{file_name}.csv')
