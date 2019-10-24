@@ -1,6 +1,9 @@
 
 # coding: utf-8
 
+# <h1>Table of Contents<span class="tocSkip"></span></h1>
+# <div class="toc"><ul class="toc-item"></ul></div>
+
 # # CECM Late Crawler
 # 
 # This code crawle status of submissions. 
@@ -111,9 +114,9 @@ def AP_grade_system_mapper(s):
         days, hours, mins, secs = cint(times['days']), cint(times['hours']), cint(times['mins']), cint(times['secs'])
         total_time_in_mins = days*24*60 + hours*60 + mins
         if total_time_in_mins <= 4: return  0
-        elif total_time_in_mins <= 3*60: return  0.3
+        elif total_time_in_mins <= 3*60: return  0.33
         elif total_time_in_mins >= 75*60: return  -1
-        else: return int((total_time_in_mins - 3*60) / (24*60)) + 1.3
+        else: return int((total_time_in_mins - 3*60) / (24*60)) + 1.33
 
 
 # In[11]:
