@@ -1,9 +1,6 @@
 
 # coding: utf-8
 
-# <h1>Table of Contents<span class="tocSkip"></span></h1>
-# <div class="toc"><ul class="toc-item"></ul></div>
-
 # # CECM Late Crawler
 # 
 # This code crawle status of submissions. 
@@ -20,7 +17,7 @@ from getpass import getpass
 import pandas as pd
 
 
-# In[2]:
+# In[17]:
 
 
 print("Get Late Submissions from CECM")
@@ -30,7 +27,7 @@ id_csv_path = input("CSV Containing IDs Path: ")
 file_name = input("Output CSV File Name: ")
 
 
-# In[3]:
+# In[95]:
 
 
 def print_progressbar(title, i, l):
@@ -38,7 +35,7 @@ def print_progressbar(title, i, l):
     print( title + "\t" + "%s\t%.2f%% (%d of %d)\t\r" % (int(percentage / 10) * "|" + (10 - int(percentage / 10)) * ".", percentage, i, l), end='\r')
 
 
-# In[4]:
+# In[96]:
 
 
 def get_late_submissions(session, assignment_id):
@@ -67,26 +64,26 @@ def get_late_submissions(session, assignment_id):
     return groupdicts
 
 
-# In[5]:
+# In[97]:
 
 
 lates = get_late_submissions(session, assignment_id)
 
 
-# In[6]:
+# In[98]:
 
 
 lates_csv = pd.read_csv(id_csv_path, index_col='id')
 
 
-# In[7]:
+# In[99]:
 
 
 lates_csv['late'] = 'Not Submitted'
 lates_csv['name'] = 'Not Submitted'
 
 
-# In[8]:
+# In[100]:
 
 
 for idx, late in enumerate(lates) :
@@ -94,14 +91,14 @@ for idx, late in enumerate(lates) :
     lates_csv.at[int(late['id']), 'late'] = late['status']
 
 
-# In[9]:
+# In[101]:
 
 
 def cint(x):
     return int(x) if x else 0
 
 
-# In[10]:
+# In[102]:
 
 
 def AP_grade_system_mapper(s): 
@@ -110,8 +107,8 @@ def AP_grade_system_mapper(s):
     elif s == 'Submitted for grading':
         return 0
     else :
-        times = re.search('((?P<days>[0-9]+) days )?((?P<hours>[0-9]+) hours )?((?P<mins>[0-9]+) mins )?((?P<secs>[0-9]+) secs )?', s).groupdict()
-        days, hours, mins, secs = cint(times['days']), cint(times['hours']), cint(times['mins']), cint(times['secs'])
+        times = re.search('((?P<days>[0-9]+) days )?((?P<day>[0-9]+) day )?((?P<hours>[0-9]+) hours )?((?P<hour>[0-9]+) hour )?((?P<mins>[0-9]+) mins )?((?P<min>[0-9]+) min )?((?P<secs>[0-9]+) secs )?', s).groupdict()
+        days, hours, mins, secs = cint(times['days'])+cint(times['day']), cint(times['hours'])+cint(times['hour']), cint(times['mins'])+cint(times['min']), cint(times['secs'])
         total_time_in_mins = days*24*60 + hours*60 + mins
         if total_time_in_mins <= 4: return  0
         elif total_time_in_mins <= 3*60: return  0.33
@@ -119,13 +116,13 @@ def AP_grade_system_mapper(s):
         else: return int((total_time_in_mins - 3*60) / (24*60)) + 1.33
 
 
-# In[11]:
+# In[103]:
 
 
 lates_csv['late'] = lates_csv['late'].apply(AP_grade_system_mapper)
 
 
-# In[12]:
+# In[104]:
 
 
 lates_csv.to_csv(f'{file_name}.csv')

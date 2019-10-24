@@ -141,3 +141,5 @@ GitHub.sublime-settings
 
 .ipynb_checkpoints
 .DS*
+
+*.csv
