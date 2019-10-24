@@ -11,7 +11,7 @@ It returns your input ids with their late status. This status mapped to [UT AP](
 UT AP grading system outputs : 
 ```
 0 -> Submitted on time
-0.3 -> less than 3 hours
-[0.3, 3.3] ->  3 hours to 3 days and 3 hours
+0.33 -> less than 3 hours
+[0.33, 3.33] ->  3 hours to 3 days and 3 hours
 -1 -> Not submitted/More than 3 days and 3 hours
 ```
