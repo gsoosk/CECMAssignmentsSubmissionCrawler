@@ -110,11 +110,14 @@ def AP_grade_system_mapper(s):
         times = re.search('((?P<days>[0-9]+) days )?((?P<day>[0-9]+) day )?((?P<hours>[0-9]+) hours )?((?P<hour>[0-9]+) hour )?((?P<mins>[0-9]+) mins )?((?P<min>[0-9]+) min )?((?P<secs>[0-9]+) secs )?', s).groupdict()
         days, hours, mins, secs = cint(times['days'])+cint(times['day']), cint(times['hours'])+cint(times['hour']), cint(times['mins'])+cint(times['min']), cint(times['secs'])
         total_time_in_mins = days*24*60 + hours*60 + mins
-        if total_time_in_mins <= 4: return  0
-        elif total_time_in_mins <= 3*60: return  0.33
-        elif total_time_in_mins >= 75*60: return  -1
-        else: return int((total_time_in_mins - 3*60) / (24*60)) + 1.33
 
+        if total_time_in_mins <= 30: return  0
+        elif total_time_in_mins <= 60 * 24: return  1
+        elif total_time_in_mins <= 60 * 24 * 2 : return 2
+        elif total_time_in_mins <= 60 * 24 * 3 : return 3
+        else : return  -1
+
+        # return int(total_time_in_mins/60)
 
 # In[103]:
 
