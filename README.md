@@ -7,11 +7,12 @@ pip install -r requirements.txt
 python3 cecm-late-crawler.py 
 ```
 ## What returns?
-It returns your input ids with their late status. This status mapped to [UT AP](https://github.com/UTAP) late grading system (you can customize it if you want). 
+It returns your input ids with their late status. This status mapped to [UT AP](https://github.com/UTAP) late grading system (you can customize it if you want. For that goal, change `AP_grade_system_mapper`). 
 UT AP grading system outputs : 
 ```
 0 -> Submitted on time
-0.33 -> less than 3 hours
-[0.33, 3.33] ->  3 hours to 3 days and 3 hours
--1 -> Not submitted/More than 3 days and 3 hours
+1 -> [0:30, 24:00] hours late
+2 -> [24:00, 48:00] hours late
+3 -> [48:00, 72:00] hours late
+-1 -> Not submitted/More than 72 hours
 ```
